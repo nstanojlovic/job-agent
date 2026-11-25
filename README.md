@@ -17,9 +17,12 @@ jobs:fetch (daily, 08:00 Belgrade time)
    │     verdict: match · agency · language · location · irrelevant
    │     score:   0–100 fit for matches, with a one-line reason
    │
-   └─ Filament dashboard
-         sorted by score · status tracking (new → applied → interview)
-         "Draft cover letter" button → Claude Sonnet, grounded in my CV
+   ├─ Filament dashboard (private)
+   │     sorted by score · status tracking (new → applied → interview)
+   │     "Draft cover letter" button → Claude Sonnet, grounded in my CV
+   │
+   └─ Public landing page at /
+         live funnel of aggregate counts: how many jobs each check removed
 ```
 
 Some design choices:
@@ -28,7 +31,7 @@ Some design choices:
 - **Two models.** Haiku for high-volume screening (cheap and fast), Sonnet only when I ask for a cover letter.
 - **Cheap pre-filter first.** Keyword and age checks drop most postings before any API call.
 - **Fail-soft sources.** Each source is a small class behind a `JobSource` interface. If one feed breaks, the others still run. Unscreened jobs are retried on the next run.
-- **Private data stays private.** My profile (incl. pay floor) and CV live in git-ignored files.
+- **Private data stays private.** My profile (incl. pay floor) and CV live in git-ignored files, and the public page only shows aggregate counts, never job titles, companies or application statuses.
 
 ## Stack
 
