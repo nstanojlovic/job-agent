@@ -41,7 +41,10 @@ return [
     | Both files are git-ignored so your pay floor and personal details
     | stay out of the public repo. Copy the *.example.md files to start.
     */
-    'profile_path' => resource_path('candidate/profile.md'),
-    'cv_path' => resource_path('candidate/cv.md'),
+    'profile_path' => env('JOBAGENT_PROFILE_PATH', resource_path('candidate/profile.md')),
+    'cv_path' => env('JOBAGENT_CV_PATH', resource_path('candidate/cv.md')),
+
+    // Comma-separated emails allowed into the Filament panel.
+    'admin_emails' => env('JOBAGENT_ADMIN_EMAILS', ''),
 
 ];
