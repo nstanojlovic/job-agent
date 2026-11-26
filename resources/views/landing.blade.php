@@ -11,6 +11,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#EDF0F3" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121A23" media="(prefers-color-scheme: dark)">
     <title>job-agent: a job-search agent by Nemanja Stanojlović</title>
     <meta name="description" content="An agent that reads WordPress and PHP job boards every morning, uses Claude to drop agencies and roles I can't take, and scores the rest.">
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -23,6 +26,18 @@
             --rule: #C9D2DB;
             --sieve: #3355D1;
             --match: #1E8A5A;
+        }
+
+        /* Dark: same sorting-office palette, lights off. Follows the system setting. */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #121A23;
+                --ink: #E4E9EE;
+                --slate: #93A2B1;
+                --rule: #2B3744;
+                --sieve: #8EA4F7;
+                --match: #4CC28A;
+            }
         }
 
         *, *::before, *::after { box-sizing: border-box; }
