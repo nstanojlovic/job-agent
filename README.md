@@ -2,6 +2,8 @@
 
 A personal job-search agent built with **Laravel**, **Filament** and the **Claude API**.
 
+**Live:** [jobs.anonemus.dev](https://jobs.anonemus.dev)
+
 Every morning it collects new WordPress / PHP jobs from several job boards, uses Claude to screen out what doesn't fit, scores the rest, and lists them in a Filament dashboard where I track applications and draft cover letters.
 
 ## How it works
