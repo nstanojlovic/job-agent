@@ -47,4 +47,16 @@ return [
     // Comma-separated emails allowed into the Filament panel.
     'admin_emails' => env('JOBAGENT_ADMIN_EMAILS', ''),
 
+    /*
+    | Recruiters, staffing and outstaffing firms and talent marketplaces.
+    | Jobs from these are dropped before Claude sees them. Matching ignores
+    | case and legal suffixes, so "Proxify AB" matches "Proxify".
+    */
+    'blocked_companies' => [
+        'SDF Systems', 'Teamcubate', 'Smart Working', 'Proxify', 'TalentCross',
+        'Speedline Hub', 'Toptal', 'Turing', 'Andela', 'Arc', 'Lemon.io',
+        'TechBiz Global', 'KDCI', 'Upvanta', 'HumanIT', 'Bet On Talent',
+        'ENI-ONE', 'Heads Talent Solutions', 'Jobgether',
+    ],
+
 ];

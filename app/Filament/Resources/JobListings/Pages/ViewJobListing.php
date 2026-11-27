@@ -24,6 +24,7 @@ class ViewJobListing extends ViewRecord
                 ->label('Open posting')
                 ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
                 ->color('gray')
+                ->visible(fn (JobListing $record) => filled($record->url))
                 ->url(fn (JobListing $record) => $record->url, shouldOpenInNewTab: true),
 
             Action::make('coverLetter')
@@ -47,6 +48,13 @@ class ViewJobListing extends ViewRecord
                 ->color('success')
                 ->hidden(fn (JobListing $record) => $record->status === JobStatus::Applied)
                 ->action(fn (JobListing $record) => $record->update(['status' => JobStatus::Applied])),
+
+            Action::make('skip')
+                ->label('Skip')
+                ->icon(Heroicon::OutlinedForward)
+                ->color('gray')
+                ->hidden(fn (JobListing $record) => $record->status === JobStatus::Skipped)
+                ->action(fn (JobListing $record) => $record->update(['status' => JobStatus::Skipped])),
 
             EditAction::make(),
         ];

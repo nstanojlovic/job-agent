@@ -42,12 +42,12 @@ class FunnelStats
             }
 
             return [
-                'collected' => JobListing::count(),
+                'collected' => JobListing::where('added_manually', false)->count(),
                 'screened' => $total,
                 'steps' => $steps,
                 'matches' => $count(AiVerdict::Match),
                 'strong' => JobListing::where('ai_score', '>=', 80)->count(),
-                'since' => JobListing::min('created_at'),
+                'since' => JobListing::where('added_manually', false)->min('created_at'),
                 'last_run' => JobListing::max('ai_scored_at'),
             ];
         });

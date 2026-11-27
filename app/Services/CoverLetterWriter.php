@@ -39,6 +39,9 @@ class CoverLetterWriter
                 Location: {$job->location}
 
                 {$job->plainDescription(8000)}
+
+                My private notes on this job (context only, never quote them or mention pay):
+                {$job->notes}
                 PROMPT,
             maxTokens: 1200,
         );

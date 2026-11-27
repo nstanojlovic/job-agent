@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\JobStatus;
 use App\JobSources\JobData;
 use App\JobSources\JobSource;
 use App\JobSources\RemoteOkSource;
@@ -24,6 +25,7 @@ class FetchJobs extends Command
     public function handle(JobScreener $screener): int
     {
         $new = 0;
+        $blocked = $this->blockedCompanyKeys();
 
         foreach ($this->sources() as $source) {
             try {
@@ -37,8 +39,15 @@ class FetchJobs extends Command
             }
 
             $added = 0;
+            $skipped = 0;
 
             foreach ($jobs as $job) {
+                if ($this->shouldSkip($job, $blocked)) {
+                    $skipped++;
+
+                    continue;
+                }
+
                 $listing = JobListing::firstOrCreate(
                     ['source' => $job->source, 'external_id' => $job->externalId],
                     $job->toAttributes(),
@@ -48,7 +57,7 @@ class FetchJobs extends Command
             }
 
             $new += $added;
-            $this->info("{$source->name()}: {$jobs->count()} relevant, {$added} new");
+            $this->info("{$source->name()}: {$jobs->count()} relevant, {$added} new, {$skipped} already tracked or blocked");
         }
 
         $this->info("Total new jobs: {$new}");
@@ -101,6 +110,49 @@ class FetchJobs extends Command
             new RssSource('weworkremotely', $feeds['weworkremotely'], titleHasCompany: true),
             new RssSource('wordpress-jobs', $feeds['wordpress-jobs']),
         ];
+    }
+
+    /**
+     * Company keys to drop outright: known agencies from config, plus every company
+     * where I already marked a role Skipped or Rejected (e.g. SOFTSWISS wanted Russian).
+     *
+     * @return array<string, true>
+     */
+    private function blockedCompanyKeys(): array
+    {
+        return collect(config('jobagent.blocked_companies', []))
+            ->merge(JobListing::whereIn('status', JobStatus::closed())->pluck('company'))
+            ->map(fn (?string $company) => JobListing::companyKey($company))
+            ->filter()
+            ->mapWithKeys(fn (string $key) => [$key => true])
+            ->all();
+    }
+
+    /**
+     * Skip jobs that are already tracked (same link, or same company + role, whatever
+     * the status or source) and jobs from blocked companies.
+     *
+     * @param  array<string, true>  $blocked
+     */
+    private function shouldSkip(JobData $job, array $blocked): bool
+    {
+        $companyKey = JobListing::companyKey($job->company);
+
+        if ($companyKey !== null && isset($blocked[$companyKey])) {
+            return true;
+        }
+
+        $dedupeKey = JobListing::dedupeKey($job->company, $job->title);
+
+        return JobListing::query()
+            ->where(function ($query) use ($job, $dedupeKey) {
+                $query->where('url', $job->url);
+
+                if ($dedupeKey !== null) {
+                    $query->orWhere('dedupe_key', $dedupeKey);
+                }
+            })
+            ->exists();
     }
 
     /** Cheap keyword + age filter, so Claude only sees plausible jobs. */
